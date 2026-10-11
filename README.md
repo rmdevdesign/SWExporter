@@ -4,6 +4,20 @@ Add-in SolidWorks x64, .NET Framework 4.8. Export de geometrie triangulee en **G
 
 ## Utilisation
 
+### Installation avec l'EXE
+
+1. Fermer SolidWorks apres avoir sauvegarde les documents.
+2. Ouvrir `SWMultiExport-Setup-0.1.0-x64.exe` et accepter la demande administrateur Windows.
+3. Suivre l'assistant visuel en francais. Le dossier SolidWorks est detecte automatiquement et peut etre corrige avec Parcourir.
+4. Conserver le dossier propose pour le plugin et, si souhaite, le chargement automatique.
+5. Terminer l'installation, relancer SolidWorks et ouvrir l'onglet SW Multi Export. Si le chargement automatique n'est pas actif pour votre compte, cocher le complement dans Outils > Complements.
+
+Prerequis : Windows 10/11 x64, SolidWorks installe et .NET Framework 4.8 ou plus recent. Validation effectuee avec SolidWorks 2023. L'installateur embarque les dependances du plugin et ne demande pas de compilation ni de scripts manuels. Il apparait dans les applications installees Windows pour la desinstallation. Il faut fermer SolidWorks avant toute installation, mise a jour ou desinstallation.
+
+L'EXE n'est pas signe avec un certificat de signature de code. Les DLL interop SolidWorks restent celles de l'installation SolidWorks et ne sont pas redistribuees.
+
+### Installation pour le developpement
+
 1. Fermer SolidWorks avant de compiler ou de mettre a jour la DLL.
 2. Compiler avec `dotnet build SwMultiExport.sln -p:Platform=x64`.
 3. Pour une premiere installation, executer `scripts/register.ps1` dans PowerShell administrateur. Une mise a jour au meme chemin ne demande pas de nouvel enregistrement.
@@ -53,3 +67,23 @@ dotnet build tests/ExportSmoke/ExportSmoke.csproj -p:Platform=x64
 Le test genere et relit les trois formats avec une scene contenant une rotation, une translation, une echelle, un miroir, une texture et une occurrence repetee. Il verifie le nombre de triangles, les bornes et la coherence faces/normales, les unites declarees dans le FBX, les liens de texture, les UV et le partage des maillages. Il verifie aussi la fusion des sommets sans perte des coutures UV, la retriangulation d'un plan de 800 a 2 triangles, un plan avec trou, la conservation des courbes en mode automatique et une decimation reglable de 800 a 400 triangles. Les fichiers GLB/glTF sont aussi relus par SharpGLTF. Ce test ne remplace pas la validation de l'extraction dans SolidWorks.
 
 La decimation QEM utilise les sources MIT de [MeshDecimator](https://github.com/Whinarn/MeshDecimator), conservees dans `third_party/MeshDecimator` avec leur licence. Aucun convertisseur externe n'est lance.
+
+## Generer l'installateur
+
+Installer [Inno Setup 6](https://jrsoftware.org/isdl.php), puis executer :
+
+```powershell
+./scripts/build-installer.ps1 -Version 0.1.0 -SwInstallDir 'C:\Program Files\SOLIDWORKS Corp\SOLIDWORKS\api\redist\'
+```
+
+Le compilateur peut aussi etre indique avec `-InnoCompiler 'C:\...\ISCC.exe'`. Le script compile une version Release dans un dossier separe, controle les dependances, inclut les notices tierces et genere l'EXE avec son fichier SHA-256 dans `artifacts/installer`. Ces fichiers generes sont exclus de Git.
+
+L'installateur enregistre uniquement la classe COM du complement, avec les memes valeurs que RegAsm, via les declarations du registre Inno Setup. Il n'appelle pas RegAsm ni PowerShell sur le PC cible. La detection de .NET et le controle des processus bloquent l'installation avant la copie si les prerequis ne sont pas satisfaits.
+
+Pour verifier installation, activation COM, mise a jour et desinstallation sur une machine de developpement SolidWorks 2023, fermer SolidWorks et lancer dans PowerShell administrateur :
+
+```powershell
+./tests/Installer/Verify-Installer.ps1 -InstallerPath './artifacts/installer/SWMultiExport-Setup-0.1.0-x64.exe'
+```
+
+Ce test sauvegarde et restaure les cles du complement de developpement. Il refuse de tourner si une installation de production existe deja. La detection de processus est testee avec un processus synthetique ; le test ne lance et ne ferme jamais SolidWorks.
