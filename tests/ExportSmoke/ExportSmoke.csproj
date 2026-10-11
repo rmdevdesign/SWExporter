@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net48</TargetFramework>
+    <PlatformTarget>x64</PlatformTarget>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <SwInstallDir Condition="'$(SwInstallDir)' == ''">D:\Softwares\SolidworksCorp\SOLIDWORKS\api\redist\</SwInstallDir>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../src/SwMultiExport/SwMultiExport.csproj" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="SolidWorks.Interop.sldworks"><HintPath>$(SwInstallDir)SolidWorks.Interop.sldworks.dll</HintPath><EmbedInteropTypes>false</EmbedInteropTypes><Private>true</Private></Reference>
+    <Reference Include="SolidWorks.Interop.swconst"><HintPath>$(SwInstallDir)SolidWorks.Interop.swconst.dll</HintPath><EmbedInteropTypes>false</EmbedInteropTypes><Private>true</Private></Reference>
+  </ItemGroup>
+  <Target Name="CopyNativeAssimpForSmoke" AfterTargets="Build">
+    <ItemGroup><NativeAssimp Include="$(NuGetPackageRoot)assimpnet/5.0.0-beta1/runtimes/win-x64/native/assimp.dll" /></ItemGroup>
+    <Copy SourceFiles="@(NativeAssimp)" DestinationFolder="$(TargetDir)runtimes/win-x64/native" />
+  </Target>
+</Project>

@@ -1,0 +1,64 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <Platforms>x64</Platforms>
+    <PlatformTarget>x64</PlatformTarget>
+    <OutputType>Library</OutputType>
+    <RootNamespace>SwMultiExport</RootNamespace>
+    <AssemblyName>SwMultiExport</AssemblyName>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+
+    <!-- GUID d'assembly (typelib), different du GUID de la classe SwAddin -->
+    <ComVisible>true</ComVisible>
+    <Guid>873c9569-fb98-471e-acb8-07adab7c7906</Guid>
+
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+
+    <!-- Chemin d'installation de SolidWorks, surchargeable via -p:SwInstallDir=... -->
+    <SwInstallDir Condition="'$(SwInstallDir)' == ''">D:\Softwares\SolidworksCorp\SOLIDWORKS\api\redist\</SwInstallDir>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Numerics" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!--
+      References d'interop SolidWorks. Private=false (pas de CopyLocal) :
+      SolidWorks.exe charge deja ces DLLs depuis son propre dossier d'installation
+      pour son usage interne. En copier une 2e fois a cote de notre add-in charge
+      une seconde instance du meme assembly non signe dans le process hote, ce qui
+      peut provoquer une instabilite catastrophique (plantage natif, non interceptable,
+      avant meme l'entree dans ConnectToSW). Le dossier de l'executable hote
+      (SOLIDWORKS\) fait partie du chemin de resolution par defaut du CLR.
+    -->
+    <Reference Include="SolidWorks.Interop.sldworks">
+      <HintPath>$(SwInstallDir)SolidWorks.Interop.sldworks.dll</HintPath>
+      <EmbedInteropTypes>false</EmbedInteropTypes>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="SolidWorks.Interop.swconst">
+      <HintPath>$(SwInstallDir)SolidWorks.Interop.swconst.dll</HintPath>
+      <EmbedInteropTypes>false</EmbedInteropTypes>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="SolidWorks.Interop.swpublished">
+      <HintPath>$(SwInstallDir)SolidWorks.Interop.swpublished.dll</HintPath>
+      <EmbedInteropTypes>false</EmbedInteropTypes>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AssimpNet" Version="5.0.0-beta1" />
+    <PackageReference Include="SharpGLTF.Toolkit" Version="1.0.6" />
+    <ProjectReference Include="../../third_party/MeshDecimator/MeshDecimator.csproj" />
+  </ItemGroup>
+
+</Project>
