@@ -87,3 +87,12 @@ Pour verifier installation, activation COM, mise a jour et desinstallation sur u
 ```
 
 Ce test sauvegarde et restaure les cles du complement de developpement. Il refuse de tourner si une installation de production existe deja. La detection de processus est testee avec un processus synthetique ; le test ne lance et ne ferme jamais SolidWorks.
+
+
+## Licence
+
+SW Multi Export est distribue sous licence [MIT](LICENSE) : utilisation, modification et redistribution libres, y compris commerciales, a condition de conserver la notice de copyright. Le logiciel est fourni "tel quel", sans garantie.
+
+Composants tiers, chacun sous sa propre licence : [MeshDecimator](third_party/MeshDecimator/LICENSE.md) (MIT), SharpGLTF (MIT), AssimpNet (MIT) et Assimp (BSD 3 clauses). L'installateur embarque ces notices dans son dossier `licenses`.
+
+SOLIDWORKS est une marque de Dassault Systemes. Ce projet independant n'est ni affilie, ni approuve, ni soutenu par Dassault Systemes. Les DLL d'interop SolidWorks ne sont pas redistribuees : elles proviennent de l'installation SolidWorks de l'utilisateur.
